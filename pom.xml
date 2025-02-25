@@ -124,7 +124,7 @@
     <dependency>
       <groupId>io.camunda</groupId>
       <artifactId>spring-boot-starter-camunda-sdk</artifactId>
-      <version>8.8.0-alpha1</version>
+      <version>8.6.7</version>
     </dependency>
   </dependencies>
 

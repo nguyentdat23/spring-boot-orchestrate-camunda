@@ -42,13 +42,13 @@ camunda:
       client-id: zeebe
       client-secret: zecret
       issuer: http://localhost:18080/auth/realms/camunda-platform/protocol/openid-connect/token
-    zeebe:
-      enabled: true
-      grpc-address: http://localhost:26500
-      rest-address: http://localhost:8088
-      prefer-rest-over-grpc: false
-      audience: zeebe-api
-      scope: # optional
+    # zeebe:
+    #   enabled: true
+    #   grpc-address: http://localhost:26500
+    #   rest-address: http://localhost:8088
+    #   prefer-rest-over-grpc: false
+    #   audience: zeebe-api
+    #   scope: # optional
 
 jwt:
   secretKey: secret

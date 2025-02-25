@@ -1,27 +1,26 @@
 package com.farukgenc.boilerplate.springboot.service;
 
-import java.util.Map;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
-
 import com.farukgenc.boilerplate.springboot.model.Ticket;
 import com.farukgenc.boilerplate.springboot.repository.TicketRepository;
 
-import io.camunda.client.CamundaClient;
-import io.camunda.client.api.response.ProcessInstanceEvent;
+import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 
 @Service
 public class TicketService {
-  private final TicketRepository ticketRepository;
-  private final CamundaClient client;
+  private final ZeebeClient zeebeClient;
 
-  @Autowired
-  public TicketService(TicketRepository ticketRepository, CamundaClient client) {
+  private final static Logger LOG = LoggerFactory.getLogger(TicketService.class);
+  private final TicketRepository ticketRepository;
+
+  @Autowired // Constructor injection is preferred
+  public TicketService(ZeebeClient zeebeClient, TicketRepository ticketRepository) {
+    this.zeebeClient = zeebeClient;
     this.ticketRepository = ticketRepository;
-    this.client = client;
   }
 
   public void sumit(String ticketNo) {
@@ -30,7 +29,7 @@ public class TicketService {
     ticket.setTitle("Proposal ");
 
     try {
-      ProcessInstanceEvent job = client.newCreateInstanceCommand()
+      zeebeClient.newCreateInstanceCommand()
           .bpmnProcessId("PaymentApprovalProcess")
           .latestVersion()
           .variables(ticket)
@@ -41,14 +40,5 @@ public class TicketService {
     } catch (Exception e) {
       throw e;
     }
-  }
-
-  public void approveTicket(Long jobKey) throws NotFoundException {
-    // Complete the job with approval data
-    client.newCompleteCommand(jobKey)
-        .variables(Map.of(
-            "approved", true))
-        .send()
-        .join();
   }
 }
