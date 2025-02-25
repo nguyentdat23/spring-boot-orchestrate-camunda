@@ -10,9 +10,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableAspectJAutoProxy
 public class SpringBootBoilerplateApplication {
 
-	public static void main(String[] args) {
+  public static void main(String[] args) {
 
-		SpringApplication.run(SpringBootBoilerplateApplication.class, args);
-	}
+    SpringApplication.run(SpringBootBoilerplateApplication.class, args);
+  }
 
 }
