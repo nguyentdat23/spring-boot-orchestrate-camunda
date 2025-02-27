@@ -8,12 +8,10 @@ import com.farukgenc.boilerplate.springboot.model.Ticket;
 import com.farukgenc.boilerplate.springboot.repository.TicketRepository;
 
 import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 
 @Service
 public class TicketService {
   private final ZeebeClient zeebeClient;
-
   private final static Logger LOG = LoggerFactory.getLogger(TicketService.class);
   private final TicketRepository ticketRepository;
 
@@ -40,5 +38,10 @@ public class TicketService {
     } catch (Exception e) {
       throw e;
     }
+  }
+
+  public void getTaskList(String assignee) {
+
+    LOG.info("Total usertask found: %s");
   }
 }
