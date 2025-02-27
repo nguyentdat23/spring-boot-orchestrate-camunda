@@ -1,24 +1,32 @@
 package com.farukgenc.boilerplate.springboot.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
+
+import com.farukgenc.boilerplate.springboot.model.Task;
 import com.farukgenc.boilerplate.springboot.model.Ticket;
 import com.farukgenc.boilerplate.springboot.repository.TicketRepository;
 
 import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1;
+import io.camunda.zeebe.client.api.response.ActivatedJob;
 
 @Service
 public class TicketService {
   private final ZeebeClient zeebeClient;
-  private final static Logger LOG = LoggerFactory.getLogger(TicketService.class);
   private final TicketRepository ticketRepository;
+  private final TaskService taskService;
 
-  @Autowired // Constructor injection is preferred
-  public TicketService(ZeebeClient zeebeClient, TicketRepository ticketRepository) {
+  public TicketService(ZeebeClient zeebeClient,
+      TicketRepository ticketRepository,
+      TaskService taskService) {
     this.zeebeClient = zeebeClient;
     this.ticketRepository = ticketRepository;
+    this.taskService = taskService;
   }
 
   public void sumit(String ticketNo) {
@@ -40,8 +48,16 @@ public class TicketService {
     }
   }
 
-  public void getTaskList(String assignee) {
+  public List<Task> getTaskList(String asignee, Long processInstanceKey) {
+    var tasks = taskService.getPendingTasks(asignee);
+    Map<String, Object> variables = new HashMap<String, Object>();
+    variables.put("approved", true);
+    variables.put("comment", "OK");
 
-    LOG.info("Total usertask found: %s");
+    Task currentTask = tasks.stream().filter(f -> f.processInstanceKey.equals(processInstanceKey)).findFirst()
+        .orElseThrow();
+
+    taskService.complete(currentTask.id);
+    return tasks;
   }
 }
